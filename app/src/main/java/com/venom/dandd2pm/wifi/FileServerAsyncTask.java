@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.venom.dandd2pm.MainActivity;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +29,20 @@ public static class FileServerAsyncTask extends AsyncTask {
     public FileServerAsyncTask(Context context, View statusText) {
         this.context = context;
         this.statusText = (TextView) statusText;
+    }
+
+    /**
+     * Start activity that can handle the JPEG image
+     */
+    @Override
+    protected void onPostExecute(String result) {
+        if (result != null) {
+            statusText.setText("File copied - " + result);
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+            context.startActivity(intent);
+        }
     }
 
     @Override
@@ -57,22 +73,8 @@ public static class FileServerAsyncTask extends AsyncTask {
             serverSocket.close();
             return f.getAbsolutePath();
         } catch (IOException e) {
-            Log.e(WiFiDirectActivity.TAG, e.getMessage());
+            Log.e(MainActivity.TAG, e.getMessage());
             return null;
-        }
-    }
-
-    /**
-     * Start activity that can handle the JPEG image
-     */
-    @Override
-    protected void onPostExecute(String result) {
-        if (result != null) {
-            statusText.setText("File copied - " + result);
-            Intent intent = new Intent();
-            intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse("file://" + result), "image/*");
-            context.startActivity(intent);
         }
     }
 }
